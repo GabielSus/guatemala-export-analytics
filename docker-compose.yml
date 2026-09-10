@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: export-analytics-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: export_analytics
+      POSTGRES_USER: export_user
+      POSTGRES_PASSWORD: export_dev_password
+    volumes:
+      - gea_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U export_user -d export_analytics"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: export-analytics-api
+    restart: unless-stopped
+    working_dir: /app/backend
+    environment:
+      APP_NAME: Guatemala Export Analytics
+      APP_VERSION: 0.2.0
+      DATABASE_URL: postgresql+psycopg://export_user:export_dev_password@db:5432/export_analytics
+      RAW_CSV_PATH: /app/data/raw/exportaciones_banguat.csv
+    volumes:
+      - ./backend:/app/backend
+      - ./data:/app/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python -m alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+volumes:
+  gea_postgres_data:
