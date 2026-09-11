@@ -1,22 +1,15 @@
-from pydantic import BaseModel
+from dataclasses import dataclass
 
 
-class ExportSummaryResponse(BaseModel):
-    first_year: int
-    latest_year: int
-    latest_year_total_usd: int
-    tariff_items: int
-    observations: int
-    latest_year_is_provisional: bool
-
-
-class YearlyExportResponse(BaseModel):
+@dataclass(frozen=True)
+class YearlyExport:
     year: int
     total_usd: int
     is_provisional: bool
 
 
-class GrowthPointResponse(BaseModel):
+@dataclass(frozen=True)
+class GrowthPoint:
     year: int
     total_usd: int
     previous_year_total_usd: int | None
@@ -24,7 +17,8 @@ class GrowthPointResponse(BaseModel):
     is_provisional: bool
 
 
-class TopTariffItemResponse(BaseModel):
+@dataclass(frozen=True)
+class TopTariffItem:
     rank: int
     code: str
     chapter: str
@@ -34,7 +28,8 @@ class TopTariffItemResponse(BaseModel):
     is_provisional: bool
 
 
-class ChapterExportResponse(BaseModel):
+@dataclass(frozen=True)
+class ChapterExport:
     rank: int
     chapter: str
     total_usd: int
@@ -43,21 +38,19 @@ class ChapterExportResponse(BaseModel):
     is_provisional: bool
 
 
-class TariffItemHistoryPointResponse(BaseModel):
+@dataclass(frozen=True)
+class TariffItemHistoryPoint:
     year: int
     value_usd: int
     is_provisional: bool
 
 
-class TariffItemDetailResponse(BaseModel):
+@dataclass(frozen=True)
+class TariffItemDetail:
     code: str
     chapter: str
     digits: int
     total_usd: int
     first_active_year: int | None
     last_active_year: int | None
-    history: list[TariffItemHistoryPointResponse]
-
-
-class YearsResponse(BaseModel):
-    years: list[int]
+    history: list[TariffItemHistoryPoint]
