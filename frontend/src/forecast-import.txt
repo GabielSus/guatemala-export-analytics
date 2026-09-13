@@ -1,0 +1,5 @@
+Add this line at the very end of frontend/src/styles.css if your build does not already import forecast.css:
+
+@import "./forecast.css";
+
+The supplied PowerShell script does this automatically.

@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.analytics import router as analytics_router
+from app.api.routes.forecast import router as forecast_router
 from app.api.routes.health import router as health_router
 from app.core.config import settings
 
@@ -22,20 +23,21 @@ app.add_middleware(
         "http://localhost:5173",
         "http://127.0.0.1:5173",
     ],
-    allow_credentials=False,
-    allow_methods=["GET"],
+    allow_credentials=True,
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.include_router(health_router)
 app.include_router(analytics_router)
+app.include_router(forecast_router)
 
 
 @app.get("/", tags=["Root"])
 def root():
     return {
-        "message": settings.app_name,
+        "project": settings.app_name,
         "version": settings.app_version,
         "docs": "/docs",
-        "dashboard": "http://127.0.0.1:5173",
+        "dashboard": settings.frontend_origin,
     }
