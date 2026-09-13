@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: guatemala-export-analytics-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.production
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
+
+    # Run migrations and seed only when the target DB is empty/incomplete.
+    preDeployCommand: >
+      python -m alembic upgrade head &&
+      python -m app.infrastructure.etl.bootstrap_production
+
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+
+      # Allows production and preview Vercel deployments.
+      - key: FRONTEND_ORIGIN_REGEX
+        value: '^https://.*\.vercel\.app$'
+
+      - key: APP_NAME
+        value: Guatemala Export Analytics
+
+      - key: APP_VERSION
+        value: 1.0.0
+
+      - key: RAW_CSV_PATH
+        value: /app/data/raw/exportaciones_banguat.csv
+
+      - key: SAC_PDF_PATH
+        value: /app/data/raw/sac.pdf

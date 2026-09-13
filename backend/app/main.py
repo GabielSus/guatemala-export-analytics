@@ -23,6 +23,7 @@ app.add_middleware(
         "http://localhost:5173",
         "http://127.0.0.1:5173",
     ],
+    allow_origin_regex=settings.frontend_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -39,5 +40,4 @@ def root():
         "project": settings.app_name,
         "version": settings.app_version,
         "docs": "/docs",
-        "dashboard": settings.frontend_origin,
     }

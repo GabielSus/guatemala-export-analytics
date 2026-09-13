@@ -7,27 +7,37 @@ __pycache__/
 .venv/
 venv/
 
-# Environment
+# Environment / secrets
 .env
 backend/.env
 frontend/.env
-
-# Data downloaded/generated locally
-data/raw/*.csv
-data/raw/*.xlsx
-data/processed/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-
-# Node
-frontend/node_modules/
-frontend/dist/
+frontend/.env.local
+frontend/.env.production
 
 # IDE / OS
 .idea/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Data
+data/raw/*
+data/processed/*
+
+# These two public source datasets are intentionally versioned for the
+# production bootstrap.
+!data/raw/exportaciones_banguat.csv
+!data/raw/sac.pdf
+
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Vercel local metadata
+.vercel/
 
 # Logs
 *.log
