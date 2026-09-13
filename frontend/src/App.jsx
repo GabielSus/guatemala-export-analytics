@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
   BarChart3,
@@ -47,7 +47,7 @@ const chartColors = [
 ];
 
 const modelLabels = {
-  naive_last_value: "Último valor",
+  naive_last_value: "Ãšltimo valor",
   linear_trend: "Tendencia lineal",
   holt_damped_trend: "Holt amortiguado",
 };
@@ -173,14 +173,21 @@ function App() {
 
     const lastActual = recentActual[recentActual.length - 1];
 
+    const actualWithForecastBridge = recentActual.map((row, index) => {
+      if (index !== recentActual.length - 1) {
+        return row;
+      }
+
+      return {
+        ...row,
+        predicted_usd: row.actual_usd,
+        lower_usd: row.actual_usd,
+        upper_usd: row.actual_usd,
+      };
+    });
+
     return [
-      ...recentActual,
-      {
-        ...lastActual,
-        predicted_usd: lastActual.actual_usd,
-        lower_usd: lastActual.actual_usd,
-        upper_usd: lastActual.actual_usd,
-      },
+      ...actualWithForecastBridge,
       ...forecast.forecast.map((point) => ({
         year: point.year,
         actual_usd: null,
@@ -223,13 +230,13 @@ function App() {
           </div>
           <h1>Guatemala Export Analytics</h1>
           <p>
-            Comercio General · Exportaciones por inciso arancelario · 2002–2025
+            Comercio General Â· Exportaciones por inciso arancelario Â· 2002â€“2025
           </p>
         </div>
 
         <div className="header-controls">
           <label>
-            Año analizado
+            AÃ±o analizado
             <select
               value={selectedYear ?? ""}
               onChange={(event) =>
@@ -266,7 +273,7 @@ function App() {
           detail={
             selectedGrowth?.previous_year_total_usd
               ? `vs. ${selectedYear - 1}`
-              : "Sin año previo disponible"
+              : "Sin aÃ±o previo disponible"
           }
           positive={
             selectedGrowth?.growth_pct == null ||
@@ -277,19 +284,19 @@ function App() {
           icon={Boxes}
           label="Incisos arancelarios"
           value={formatNumber(summary.tariff_items)}
-          detail="Códigos únicos en la serie"
+          detail="CÃ³digos Ãºnicos en la serie"
         />
         <KpiCard
           icon={Database}
           label="Observaciones"
           value={formatNumber(summary.observations)}
-          detail={`${summary.first_year}–${summary.latest_year}`}
+          detail={`${summary.first_year}â€“${summary.latest_year}`}
         />
       </section>
 
       <section className="dashboard-grid wide-left">
         <Panel
-          title="Evolución histórica"
+          title="EvoluciÃ³n histÃ³rica"
           subtitle="Valor total anual de exportaciones en USD"
         >
           <div className="chart-area">
@@ -318,7 +325,7 @@ function App() {
                 />
                 <Tooltip
                   formatter={(value) => formatUsdFull(value)}
-                  labelFormatter={(value) => `Año ${value}`}
+                  labelFormatter={(value) => `AÃ±o ${value}`}
                   contentStyle={{
                     background: "#111827",
                     border: "1px solid #334155",
@@ -339,8 +346,8 @@ function App() {
         </Panel>
 
         <Panel
-          title="Variación anual"
-          subtitle="Crecimiento porcentual respecto al año anterior"
+          title="VariaciÃ³n anual"
+          subtitle="Crecimiento porcentual respecto al aÃ±o anterior"
         >
           <div className="chart-area">
             <ResponsiveContainer width="100%" height="100%">
@@ -383,8 +390,8 @@ function App() {
 
       <section className="dashboard-grid">
         <Panel
-          title={`Top incisos · ${selectedYear}`}
-          subtitle="Mayores valores exportados por código arancelario"
+          title={`Top incisos Â· ${selectedYear}`}
+          subtitle="Mayores valores exportados por cÃ³digo arancelario"
         >
           {sectionLoading ? (
             <div className="panel-loading">Actualizando...</div>
@@ -415,7 +422,7 @@ function App() {
                             }
                             title={item.description ?? ""}
                           >
-                            {item.description || "Sin descripción SAC"}
+                            {item.description || "Sin descripciÃ³n SAC"}
                           </span>
                         </div>
                       </td>
@@ -431,8 +438,8 @@ function App() {
         </Panel>
 
         <Panel
-          title={`Principales capítulos · ${selectedYear}`}
-          subtitle="Participación de los 10 capítulos con mayor valor"
+          title={`Principales capÃ­tulos Â· ${selectedYear}`}
+          subtitle="ParticipaciÃ³n de los 10 capÃ­tulos con mayor valor"
         >
           <div className="chapter-layout">
             <div className="donut">
@@ -455,7 +462,7 @@ function App() {
                   </Pie>
                   <Tooltip
                     formatter={(value) => formatUsdFull(value)}
-                    labelFormatter={(label) => `Capítulo ${label}`}
+                    labelFormatter={(label) => `CapÃ­tulo ${label}`}
                     contentStyle={{
                       background: "#111827",
                       border: "1px solid #334155",
@@ -477,7 +484,7 @@ function App() {
                     />
                     <b>Cap. {chapter.chapter}</b>
                     <em title={chapter.description ?? ""}>
-                      {chapter.description || "Sin descripción"}
+                      {chapter.description || "Sin descripciÃ³n"}
                     </em>
                   </span>
                   <strong>{chapter.share_pct.toFixed(2)}%</strong>
@@ -492,7 +499,7 @@ function App() {
         <Panel
           className="forecast-panel"
           title="Forecast de exportaciones"
-          subtitle="Proyección anual · selección automática mediante backtesting"
+          subtitle="ProyecciÃ³n anual Â· selecciÃ³n automÃ¡tica mediante backtesting"
         >
           <div className="forecast-layout">
             <div className="forecast-chart">
@@ -524,12 +531,12 @@ function App() {
                       const labels = {
                         actual_usd: "Real",
                         predicted_usd: "Forecast",
-                        lower_usd: "Límite inferior",
-                        upper_usd: "Límite superior",
+                        lower_usd: "LÃ­mite inferior",
+                        upper_usd: "LÃ­mite superior",
                       };
                       return [formatUsdFull(value), labels[name] || name];
                     }}
-                    labelFormatter={(value) => `Año ${value}`}
+                    labelFormatter={(value) => `AÃ±o ${value}`}
                     contentStyle={{
                       background: "#111827",
                       border: "1px solid #334155",
@@ -587,10 +594,10 @@ function App() {
 
               {nextForecast && (
                 <div className="forecast-next">
-                  <span>Estimación {nextForecast.year}</span>
+                  <span>EstimaciÃ³n {nextForecast.year}</span>
                   <strong>{formatUsd(nextForecast.predicted_usd)}</strong>
                   <small>
-                    Rango aprox. {formatUsd(nextForecast.lower_usd)} –{" "}
+                    Rango aprox. {formatUsd(nextForecast.lower_usd)} â€“{" "}
                     {formatUsd(nextForecast.upper_usd)}
                   </small>
                 </div>
@@ -606,13 +613,13 @@ function App() {
                   <strong>{formatUsd(forecast?.rmse)}</strong>
                 </div>
                 <div>
-                  <span>Validación</span>
-                  <strong>{forecast?.backtest_points} años</strong>
+                  <span>ValidaciÃ³n</span>
+                  <strong>{forecast?.backtest_points} aÃ±os</strong>
                 </div>
                 <div>
                   <span>Serie usada</span>
                   <strong>
-                    {forecast?.training_start_year}–{forecast?.training_end_year}
+                    {forecast?.training_start_year}â€“{forecast?.training_end_year}
                   </strong>
                 </div>
               </div>
@@ -620,7 +627,7 @@ function App() {
               {forecast?.uses_provisional_data && (
                 <p className="forecast-note">
                   La serie incluye 2025 provisional. El rango mostrado es una
-                  aproximación basada en errores de backtesting, no una garantía.
+                  aproximaciÃ³n basada en errores de backtesting, no una garantÃ­a.
                 </p>
               )}
             </aside>
@@ -630,7 +637,7 @@ function App() {
 
       <footer>
         <span>
-          Fuente: Banco de Guatemala · Comercio General · ETL validado.
+          Fuente: Banco de Guatemala Â· Comercio General Â· ETL validado.
         </span>
         <span>
           {summary.latest_year_is_provisional
@@ -643,3 +650,4 @@ function App() {
 }
 
 export default App;
+
