@@ -19,6 +19,8 @@ class GrowthPoint:
 
 @dataclass(frozen=True)
 class TopTariffItem:
+    # Keep the original positional order for backwards compatibility
+    # with existing tests and application code.
     rank: int
     code: str
     chapter: str
@@ -26,16 +28,19 @@ class TopTariffItem:
     value_usd: int
     share_pct: float
     is_provisional: bool
+    description: str | None = None
 
 
 @dataclass(frozen=True)
 class ChapterExport:
+    # Keep the original positional order.
     rank: int
     chapter: str
     total_usd: int
     item_count: int
     share_pct: float
     is_provisional: bool
+    description: str | None = None
 
 
 @dataclass(frozen=True)
@@ -47,6 +52,7 @@ class TariffItemHistoryPoint:
 
 @dataclass(frozen=True)
 class TariffItemDetail:
+    # Keep the original positional order.
     code: str
     chapter: str
     digits: int
@@ -54,3 +60,5 @@ class TariffItemDetail:
     first_active_year: int | None
     last_active_year: int | None
     history: list[TariffItemHistoryPoint]
+    description: str | None = None
+    chapter_description: str | None = None

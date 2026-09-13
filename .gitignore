@@ -10,23 +10,24 @@ venv/
 # Environment
 .env
 backend/.env
+frontend/.env
 
-# IDE / OS
-.idea/
-.vscode/
-.DS_Store
-Thumbs.db
-
-# Data generated or downloaded locally
+# Data downloaded/generated locally
 data/raw/*.csv
 data/raw/*.xlsx
 data/processed/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 
-# Frontend
+# Node
 frontend/node_modules/
 frontend/dist/
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
 
 # Logs
 *.log

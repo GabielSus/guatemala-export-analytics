@@ -116,7 +116,9 @@ def get_item_detail(
         result = _use_cases(db).item_detail(code, start_year, end_year)
         return TariffItemDetailResponse(
             code=result.code,
+            description=result.description,
             chapter=result.chapter,
+            chapter_description=result.chapter_description,
             digits=result.digits,
             total_usd=result.total_usd,
             first_active_year=result.first_active_year,

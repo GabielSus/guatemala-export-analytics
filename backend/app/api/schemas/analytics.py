@@ -27,6 +27,7 @@ class GrowthPointResponse(BaseModel):
 class TopTariffItemResponse(BaseModel):
     rank: int
     code: str
+    description: str | None
     chapter: str
     digits: int
     value_usd: int
@@ -37,6 +38,7 @@ class TopTariffItemResponse(BaseModel):
 class ChapterExportResponse(BaseModel):
     rank: int
     chapter: str
+    description: str | None
     total_usd: int
     item_count: int
     share_pct: float
@@ -51,7 +53,9 @@ class TariffItemHistoryPointResponse(BaseModel):
 
 class TariffItemDetailResponse(BaseModel):
     code: str
+    description: str | None
     chapter: str
+    chapter_description: str | None
     digits: int
     total_usd: int
     first_active_year: int | None

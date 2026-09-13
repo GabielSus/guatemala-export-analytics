@@ -6,6 +6,7 @@ from sqlalchemy import (
     Integer,
     SmallInteger,
     String,
+    Text,
     UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -45,3 +46,12 @@ class ExportValueModel(Base):
     is_provisional: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     tariff_item: Mapped[TariffItemModel] = relationship(back_populates="exports")
+
+
+class TariffCatalogModel(Base):
+    __tablename__ = "tariff_catalog"
+
+    code: Mapped[str] = mapped_column(String(10), primary_key=True)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    display_name: Mapped[str] = mapped_column(Text, nullable=False)
+    level: Mapped[str] = mapped_column(String(20), nullable=False, index=True)

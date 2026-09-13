@@ -1,45 +1,117 @@
-# Guatemala Export Analytics — fixed Sprint 0
+# Guatemala Export Analytics
 
-This revision fixes the Windows PostgreSQL authentication issue by avoiding port 5432 entirely.
+Proyecto de portafolio enfocado en Data Analytics + Data Engineering + Backend.
+Analiza exportaciones históricas de Guatemala por inciso arancelario utilizando un dataset oficial de Banco de Guatemala.
 
-## Root cause addressed
+## Estado
 
-The backend was connecting to `localhost:5432`, where another PostgreSQL instance can already exist on Windows. A password failure there does not prove it reached the Docker container.
+**MVP funcional:** ETL + PostgreSQL + FastAPI + Dashboard React.
 
-The fixed setup uses:
+La arquitectura se mantiene deliberadamente compacta:
 
 ```text
-Host: 127.0.0.1
-Host port: 55432
-Container port: 5432
-Database: export_analytics
-User: export_user
-Password: export_dev_password
+API Route -> Application Use Cases -> Repository Contract -> SQLAlchemy/PostgreSQL
+CSV -> Pandas ETL -> Validation -> PostgreSQL
+React Dashboard -> FastAPI Analytics API
 ```
 
-It also uses a new Docker volume so old credentials cannot leak into the new database.
+## Stack
 
-## Recommended repair
+- Python 3.12
+- FastAPI
+- Pandas
+- PostgreSQL 17
+- SQLAlchemy 2
+- Alembic
+- Pytest
+- React + Vite
+- Recharts
+- Docker Compose
 
-Keep your current Python 3.12 `.venv`.
+## Dataset validado
 
-From the project root:
+- 13,046 incisos arancelarios
+- 313,104 observaciones
+- 24 años: 2002–2025
+- 0 nulos en la transformación final
+- 0 pares inciso/año duplicados
+- 2025 marcado como provisional
+- Total 2025 validado: USD 15,592,574,551
+
+El CSV original permanece en `data/raw/` y está ignorado por Git.
+
+## Endpoints
+
+```text
+GET /health
+GET /health/database
+GET /analytics/summary
+GET /analytics/yearly
+GET /analytics/growth
+GET /analytics/top-items?year=2025&limit=10
+GET /analytics/chapters?year=2025&limit=10
+GET /analytics/items/{code}
+GET /analytics/years
+```
+
+## Primera validación después de aplicar esta versión
 
 ```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\scripts\reset_local_db.ps1
+.\scripts\bootstrap.ps1
 ```
 
-That script recreates only this project's DB, writes the matching `.env`, verifies the exact database connection, runs Alembic, and runs Pytest.
+El bootstrap conserva la base existente; solo ejecuta el ETL si `export_values` está vacío.
 
-After success:
+## Arranque normal
+
+Desde la raíz:
 
 ```powershell
-cd backend
-.\.venv\Scripts\Activate.ps1
-python -m app.infrastructure.etl.inspect_dataset
-python -m app.infrastructure.etl.load_exports
-uvicorn app.main:app --reload
+docker compose up -d --build
 ```
 
-Open `http://127.0.0.1:8000/docs`.
+O:
+
+```powershell
+.\scripts\start.ps1
+```
+
+Dashboard:
+
+```text
+http://127.0.0.1:5173
+```
+
+Swagger:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+## Verificación
+
+```powershell
+.\scripts\verify.ps1
+```
+
+## Tests
+
+```powershell
+.\scripts\test.ps1
+```
+
+## Recargar dataset
+
+```powershell
+.\scripts\reload_data.ps1
+```
+
+El ETL usa `ON CONFLICT` para actualizar observaciones existentes sin duplicarlas.
+
+## Próximas fases
+
+1. Validación visual y funcional completa del dashboard.
+2. Catálogo oficial de descripciones de incisos/productos.
+3. Forecasting con evaluación del modelo antes de publicarlo.
+4. Deploy del backend, frontend y PostgreSQL.
+5. README final con screenshots y demo para portafolio.

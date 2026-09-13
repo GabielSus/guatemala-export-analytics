@@ -1,55 +1,70 @@
-# Scrum Plan — Guatemala Export Analytics
-
-## Working style
-
-Mini-sprints of 1–3 focused work sessions. Every ticket must leave a verifiable result.
+# Scrum Roadmap
 
 ## Definition of Done
 
-- Code works locally.
-- Relevant validation/test passes.
-- No known blocking error.
-- Files remain inside the agreed Clean Architecture boundaries.
-- Commit is created with the ticket ID.
-- README/docs updated when behavior changes.
+- Código funciona dentro de Docker.
+- Tests relevantes pasan.
+- Endpoint o pantalla puede verificarse manualmente.
+- No se introducen capas innecesarias.
+- Commit asociado al ticket.
 
-## Sprint 0 — Functional foundation
+## Sprint 0 — Foundation — COMPLETADO
 
-**Sprint Goal:** understand the real source dataset and leave FastAPI + PostgreSQL + ETL ready to run.
+- Dataset inspection
+- ETL
+- PostgreSQL
+- Alembic
+- Docker
+- FastAPI health
+- Base tests
 
-| Ticket | Task | Target |
-|---|---|---:|
-| EA-001 | Inspect real CSV and document findings | 30 min |
-| EA-002 | Create compact Clean Architecture | 30 min |
-| EA-003 | Create FastAPI health endpoint | 20 min |
-| EA-004 | Configure PostgreSQL + Alembic | 35 min |
-| EA-005 | Build first ETL transform/validation | 45 min |
-| EA-006 | Add automated tests | 20 min |
-| EA-007 | Load data and verify analytics summary | 30–45 min |
+## Sprint 1 — Analytics API — IMPLEMENTADO EN MVP
 
-Expected total: about 3–3.5 hours.
+- EA-101 yearly totals
+- EA-102 year-over-year growth
+- EA-103 top tariff items
+- EA-104 chapter analytics
+- EA-105 item history and filters
+- EA-106 metadata years
+- EA-107 use-case tests
 
-## Sprint 1 — Analytics API
+Tiempo estimado original: 4–6 h.
+Estado: código implementado; falta validación completa en la PC del proyecto.
 
-Planned tickets:
+## Sprint 2 — Dashboard React — IMPLEMENTADO EN MVP
 
-- EA-101: yearly export totals
-- EA-102: year-over-year growth
-- EA-103: exports by tariff chapter
-- EA-104: top tariff items
-- EA-105: filters and pagination
-- EA-106: API tests
+- KPI cards
+- Historical exports chart
+- YoY growth chart
+- Top tariff items table
+- Chapter participation visualization
+- Year selector
+- Loading/error states
+- Responsive layout
 
-Target: 5–7 hours.
+Tiempo estimado original: 7–9 h.
+Estado: código implementado; falta validación visual y ajustes.
 
-## Sprint 2 — React dashboard
+## Sprint 3 — Data enrichment + Forecasting — PENDIENTE
 
-Target: 8–10 hours.
+- Conseguir catálogo oficial de descripciones
+- Enriquecer códigos con nombres
+- Analizar la serie temporal
+- Baseline
+- Evaluar MAE/RMSE o métrica apropiada
+- Forecast endpoint
+- Forecast visualization
 
-## Sprint 3 — Forecasting
+Estimación: 6–9 h.
 
-Target: 5–8 hours, after validating whether the available yearly series supports the chosen model.
+## Sprint 4 — Deploy + Portfolio — PENDIENTE
 
-## Sprint 4 — Deploy and portfolio
+- Production Docker settings
+- Hosted PostgreSQL
+- Backend deploy
+- Frontend deploy
+- README final
+- Screenshots
+- Demo video
 
-Target: 4–6 hours.
+Estimación: 4–6 h.

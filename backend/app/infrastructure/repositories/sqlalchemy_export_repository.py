@@ -1,5 +1,5 @@
 from sqlalchemy import distinct, func, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, aliased
 
 from app.domain.entities.analytics import (
     ChapterExport,
@@ -10,7 +10,11 @@ from app.domain.entities.analytics import (
 )
 from app.domain.entities.export_summary import ExportSummary
 from app.domain.repositories.export_repository import ExportRepository
-from app.infrastructure.database.models import ExportValueModel, TariffItemModel
+from app.infrastructure.database.models import (
+    ExportValueModel,
+    TariffCatalogModel,
+    TariffItemModel,
+)
 
 
 class SQLAlchemyExportRepository(ExportRepository):
@@ -108,11 +112,14 @@ class SQLAlchemyExportRepository(ExportRepository):
         self._ensure_year_exists(year)
         year_total = self._year_total(year)
 
+        item_catalog = aliased(TariffCatalogModel)
+
         statement = (
             select(
                 TariffItemModel.code,
                 TariffItemModel.chapter,
                 TariffItemModel.digits,
+                item_catalog.display_name.label("description"),
                 ExportValueModel.value_usd,
                 ExportValueModel.is_provisional,
             )
@@ -120,6 +127,7 @@ class SQLAlchemyExportRepository(ExportRepository):
                 ExportValueModel,
                 ExportValueModel.tariff_item_id == TariffItemModel.id,
             )
+            .outerjoin(item_catalog, item_catalog.code == TariffItemModel.code)
             .where(
                 ExportValueModel.year == year,
                 ExportValueModel.value_usd > 0,
@@ -137,6 +145,7 @@ class SQLAlchemyExportRepository(ExportRepository):
             TopTariffItem(
                 rank=index,
                 code=row.code,
+                description=row.description,
                 chapter=row.chapter,
                 digits=int(row.digits),
                 value_usd=int(row.value_usd),
@@ -152,9 +161,12 @@ class SQLAlchemyExportRepository(ExportRepository):
         self._ensure_year_exists(year)
         year_total = self._year_total(year)
 
+        chapter_catalog = aliased(TariffCatalogModel)
+
         statement = (
             select(
                 TariffItemModel.chapter,
+                chapter_catalog.description.label("description"),
                 func.sum(ExportValueModel.value_usd).label("total_usd"),
                 func.count(ExportValueModel.tariff_item_id).label("item_count"),
                 func.bool_or(ExportValueModel.is_provisional).label("is_provisional"),
@@ -163,11 +175,18 @@ class SQLAlchemyExportRepository(ExportRepository):
                 ExportValueModel,
                 ExportValueModel.tariff_item_id == TariffItemModel.id,
             )
+            .outerjoin(
+                chapter_catalog,
+                chapter_catalog.code == TariffItemModel.chapter,
+            )
             .where(
                 ExportValueModel.year == year,
                 ExportValueModel.value_usd > 0,
             )
-            .group_by(TariffItemModel.chapter)
+            .group_by(
+                TariffItemModel.chapter,
+                chapter_catalog.description,
+            )
             .order_by(func.sum(ExportValueModel.value_usd).desc())
         )
 
@@ -180,6 +199,7 @@ class SQLAlchemyExportRepository(ExportRepository):
             ChapterExport(
                 rank=index,
                 chapter=row.chapter,
+                description=row.description,
                 total_usd=int(row.total_usd),
                 item_count=int(row.item_count),
                 share_pct=round((int(row.total_usd) / year_total) * 100, 2)
@@ -201,6 +221,17 @@ class SQLAlchemyExportRepository(ExportRepository):
         )
         if item is None:
             raise ValueError(f"Tariff item {code} was not found.")
+
+        item_description = self.db.scalar(
+            select(TariffCatalogModel.display_name).where(
+                TariffCatalogModel.code == code
+            )
+        )
+        chapter_description = self.db.scalar(
+            select(TariffCatalogModel.description).where(
+                TariffCatalogModel.code == item.chapter
+            )
+        )
 
         statement = select(
             ExportValueModel.year,
@@ -229,7 +260,9 @@ class SQLAlchemyExportRepository(ExportRepository):
 
         return TariffItemDetail(
             code=item.code,
+            description=item_description,
             chapter=item.chapter,
+            chapter_description=chapter_description,
             digits=int(item.digits),
             total_usd=sum(point.value_usd for point in history),
             first_active_year=min(active_years) if active_years else None,
