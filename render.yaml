@@ -8,18 +8,12 @@ services:
     healthCheckPath: /health
     autoDeploy: true
 
-    # Run migrations and seed only when the target DB is empty/incomplete.
-    preDeployCommand: >
-      python -m alembic upgrade head &&
-      python -m app.infrastructure.etl.bootstrap_production
-
     envVars:
       - key: DATABASE_URL
         sync: false
 
-      # Allows production and preview Vercel deployments.
       - key: FRONTEND_ORIGIN_REGEX
-        value: '^https://.*\.vercel\.app$'
+        value: '^https://.*\\.vercel\\.app$'
 
       - key: APP_NAME
         value: Guatemala Export Analytics
