@@ -11,18 +11,9 @@ services:
     envVars:
       - key: DATABASE_URL
         sync: false
-
       - key: FRONTEND_ORIGIN_REGEX
         value: '^https://.*\\.vercel\\.app$'
-
       - key: APP_NAME
         value: Guatemala Export Analytics
-
       - key: APP_VERSION
         value: 1.0.0
-
-      - key: RAW_CSV_PATH
-        value: /app/data/raw/exportaciones_banguat.csv
-
-      - key: SAC_PDF_PATH
-        value: /app/data/raw/sac.pdf

@@ -3,13 +3,22 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from app.core.config import settings
+from app.core.config import sqlalchemy_database_url
 from app.infrastructure.database.base import Base
 from app.infrastructure.database import models  # noqa: F401
 
 
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.database_url)
+
+# IMPORTANT:
+# Neon provides URLs such as postgresql://...
+# SQLAlchemy interprets that generic scheme as psycopg2 by default.
+# This project uses psycopg v3, so normalize it to postgresql+psycopg://
+# before Alembic creates its engine.
+config.set_main_option(
+    "sqlalchemy.url",
+    sqlalchemy_database_url(),
+)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -19,7 +28,7 @@ target_metadata = Base.metadata
 
 def run_migrations_offline():
     context.configure(
-        url=settings.database_url,
+        url=sqlalchemy_database_url(),
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
